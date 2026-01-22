@@ -1,0 +1,78 @@
+{{- if and (.Values.enabled | default false) (not .Values.ha_enabled) }}
+# -------------------------------
+# Persistent Volume Claim
+# -------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "etcd.fullname" . }}-data
+  namespace: {{ include "etcd.namespace" . }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+  {{- if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName }}
+  {{- end }}
+
+---
+# -------------------------------
+# Etcd Deployment
+# -------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "etcd.fullname" . }}
+  namespace: {{ include "etcd.namespace" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "etcd.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "etcd.fullname" . }}
+    spec:
+      containers:
+        - name: etcd
+          image: {{ .Values.image }}
+          command:
+            - etcd
+            - --data-dir=/var/lib/etcd
+            - --listen-client-urls=http://0.0.0.0:{{ .Values.port }}
+            - --advertise-client-urls=http://{{ include "etcd.fullname" . }}:{{ .Values.port }}
+          ports:
+            - name: client
+              containerPort: {{ .Values.port }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/etcd
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "etcd.fullname" . }}-data
+
+---
+# -------------------------------
+# Etcd Service (k3s ServiceLB)
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "etcd.fullname" . }}
+  namespace: {{ include "etcd.namespace" . }}
+  labels:
+    app: {{ include "etcd.fullname" . }}
+    etcd.service: client
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  selector:
+    app: {{ include "etcd.fullname" . }}
+  ports:
+    - name: client
+      port: {{ .Values.port }}
+      targetPort: {{ .Values.port }}
+{{- end }}

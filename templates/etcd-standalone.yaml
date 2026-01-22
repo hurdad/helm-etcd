@@ -42,16 +42,19 @@ spec:
           command:
             - etcd
             - --data-dir=/var/lib/etcd
-            - --listen-client-urls=http://0.0.0.0:{{ .Values.port }}
-            - --advertise-client-urls=http://{{ include "etcd.fullname" . }}:{{ .Values.port }}
+            - --listen-client-urls=http://0.0.0.0:{{ .Values.grpcPort }}
+            - --listen-client-http-urls=http://0.0.0.0:{{ .Values.httpPort }}
+            - --advertise-client-urls=http://{{ include "etcd.fullname" . }}:{{ .Values.grpcPort }}
           ports:
-            - name: client
-              containerPort: {{ .Values.port }}
+            - name: client-grpc
+              containerPort: {{ .Values.grpcPort }}
+            - name: client-http
+              containerPort: {{ .Values.httpPort }}
           {{- if .Values.healthChecks.enabled }}
           livenessProbe:
             httpGet:
               path: {{ .Values.healthChecks.liveness.path }}
-              port: client
+              port: client-http
             initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
@@ -59,7 +62,7 @@ spec:
           readinessProbe:
             httpGet:
               path: {{ .Values.healthChecks.readiness.path }}
-              port: client
+              port: client-http
             initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
@@ -67,7 +70,7 @@ spec:
           startupProbe:
             httpGet:
               path: {{ .Values.healthChecks.startup.path }}
-              port: client
+              port: client-http
             periodSeconds: {{ .Values.healthChecks.startup.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.startup.timeoutSeconds }}
             failureThreshold: {{ .Values.healthChecks.startup.failureThreshold }}
@@ -97,7 +100,10 @@ spec:
   selector:
     app: {{ include "etcd.fullname" . }}
   ports:
-    - name: client
-      port: {{ .Values.port }}
-      targetPort: {{ .Values.port }}
+    - name: client-grpc
+      port: {{ .Values.grpcPort }}
+      targetPort: {{ .Values.grpcPort }}
+    - name: client-http
+      port: {{ .Values.httpPort }}
+      targetPort: {{ .Values.httpPort }}
 {{- end }}

@@ -39,7 +39,7 @@ Initial cluster list for etcd HA mode.
 {{- $svc := include "etcd.headlessName" . -}}
 {{- $entries := list -}}
 {{- range $index := until $replicas -}}
-{{- $peer := printf "%s-%d=http://%s-%d.%s:%d" $name $index $name $index $svc $.Values.peerPort -}}
+{{- $peer := printf "%s-%d=http://%s-%d.%s:%d" $name $index $name $index $svc (int $.Values.peerPort) -}}
 {{- $entries = append $entries $peer -}}
 {{- end -}}
 {{- join "," $entries -}}

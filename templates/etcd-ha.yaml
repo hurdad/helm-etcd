@@ -1,4 +1,4 @@
-{{- if and (.Values.enabled | default false) .Values.ha_enabled }}
+{{- if .Values.ha_enabled }}
 # -------------------------------
 # Etcd Headless Service (HA peer discovery)
 # -------------------------------

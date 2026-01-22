@@ -1,4 +1,4 @@
-{{- if and (.Values.enabled | default false) (not .Values.ha_enabled) }}
+{{- if not .Values.ha_enabled }}
 # -------------------------------
 # Persistent Volume Claim
 # -------------------------------

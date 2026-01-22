@@ -34,6 +34,7 @@ metadata:
 spec:
   replicas: {{ .Values.replicas }}
   serviceName: {{ include "etcd.headlessName" . }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       app: {{ include "etcd.fullname" . }}

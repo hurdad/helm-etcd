@@ -1,0 +1,105 @@
+{{- if and (.Values.enabled | default false) .Values.ha_enabled }}
+# -------------------------------
+# Etcd Headless Service (HA peer discovery)
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "etcd.headlessName" . }}
+  namespace: {{ include "etcd.namespace" . }}
+  labels:
+    app: {{ include "etcd.fullname" . }}
+    etcd.service: headless
+spec:
+  clusterIP: None
+  selector:
+    app: {{ include "etcd.fullname" . }}
+  ports:
+    - name: peer
+      port: 2380
+      targetPort: 2380
+    - name: client
+      port: {{ .Values.port }}
+      targetPort: {{ .Values.port }}
+
+---
+# -------------------------------
+# Etcd StatefulSet (HA)
+# -------------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "etcd.fullname" . }}
+  namespace: {{ include "etcd.namespace" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  serviceName: {{ include "etcd.headlessName" . }}
+  selector:
+    matchLabels:
+      app: {{ include "etcd.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "etcd.fullname" . }}
+    spec:
+      containers:
+        - name: etcd
+          image: {{ .Values.image }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - etcd
+          args:
+            - --data-dir=/var/lib/etcd
+            - --name=$(POD_NAME)
+            - --listen-peer-urls=http://0.0.0.0:2380
+            - --listen-client-urls=http://0.0.0.0:{{ .Values.port }}
+            - --advertise-client-urls=http://$(POD_NAME).{{ include "etcd.headlessName" . }}:{{ .Values.port }}
+            - --initial-advertise-peer-urls=http://$(POD_NAME).{{ include "etcd.headlessName" . }}:2380
+            - --initial-cluster={{ include "etcd.initialCluster" . }}
+            - --initial-cluster-state=new
+          ports:
+            - name: client
+              containerPort: {{ .Values.port }}
+            - name: peer
+              containerPort: 2380
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/etcd
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.storage.size }}
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName }}
+        {{- end }}
+
+---
+# -------------------------------
+# Etcd Client Service
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "etcd.fullname" . }}
+  namespace: {{ include "etcd.namespace" . }}
+  labels:
+    app: {{ include "etcd.fullname" . }}
+    etcd.service: client
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  selector:
+    app: {{ include "etcd.fullname" . }}
+  ports:
+    - name: client
+      port: {{ .Values.port }}
+      targetPort: {{ .Values.port }}
+{{- end }}

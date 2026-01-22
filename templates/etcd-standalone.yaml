@@ -47,6 +47,31 @@ spec:
           ports:
             - name: client
               containerPort: {{ .Values.port }}
+          {{- if .Values.healthChecks.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.liveness.path }}
+              port: client
+            initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.readiness.path }}
+              port: client
+            initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.readiness.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.startup.path }}
+              port: client
+            periodSeconds: {{ .Values.healthChecks.startup.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.startup.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.startup.failureThreshold }}
+          {{- end }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/etcd

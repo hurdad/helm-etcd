@@ -32,3 +32,9 @@ pvcRetentionPolicy:
   enabled: false
   whenDeleted: Retain
   whenScaled: Retain
+commonLabels: {}
+commonAnnotations: {}
+podLabels: {}
+podAnnotations: {}
+serviceAnnotations: {}
+pvcAnnotations: {}

@@ -32,3 +32,9 @@ Helm chart for deploying an etcd cluster.
 | `pvcRetentionPolicy.enabled` | bool | `false` | Enable StatefulSet PVC retention policy (Kubernetes 1.21+). |
 | `pvcRetentionPolicy.whenDeleted` | string | `Retain` | PVC retention when the StatefulSet is deleted (`Retain` or `Delete`). |
 | `pvcRetentionPolicy.whenScaled` | string | `Retain` | PVC retention when the StatefulSet is scaled down (`Retain` or `Delete`). |
+| `commonLabels` | object | `{}` | Labels applied to all resources in the chart. |
+| `commonAnnotations` | object | `{}` | Annotations applied to all resources in the chart. |
+| `podLabels` | object | `{}` | Extra labels applied to pods. |
+| `podAnnotations` | object | `{}` | Extra annotations applied to pods. |
+| `serviceAnnotations` | object | `{}` | Extra annotations applied to Services. |
+| `pvcAnnotations` | object | `{}` | Extra annotations applied to PVCs. |

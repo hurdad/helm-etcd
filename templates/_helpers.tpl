@@ -71,3 +71,16 @@ Initial cluster list for etcd HA mode.
 {{- end -}}
 {{- join "," $entries -}}
 {{- end -}}
+
+{{/*
+Etcd image reference.
+*/}}
+{{- define "etcd.image" -}}
+{{- $repository := .Values.image.repository -}}
+{{- $tag := default .Chart.AppVersion .Values.image.tag -}}
+{{- if .Values.image.digest -}}
+{{- printf "%s@%s" $repository .Values.image.digest -}}
+{{- else -}}
+{{- printf "%s:%s" $repository $tag -}}
+{{- end -}}
+{{- end -}}

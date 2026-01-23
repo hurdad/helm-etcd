@@ -62,7 +62,8 @@ spec:
     spec:
       containers:
         - name: etcd
-          image: {{ .Values.image }}
+          image: {{ include "etcd.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - etcd
             - --data-dir=/var/lib/etcd

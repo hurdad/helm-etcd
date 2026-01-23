@@ -1,7 +1,11 @@
 haEnabled: true
 haReplicas: 3
 standaloneReplicas: 1
-image: "quay.io/coreos/etcd:v3.6.6"
+image:
+  repository: "quay.io/coreos/etcd"
+  tag: "v3.6.6"
+  digest: ""
+  pullPolicy: IfNotPresent
 grpcPort: 2379
 httpPort: 2381
 peerPort: 2380

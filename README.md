@@ -9,7 +9,10 @@ Helm chart for deploying an etcd cluster.
 | `haEnabled` | bool | `true` | Enable high-availability mode. |
 | `haReplicas` | int | `3` | Number of etcd replicas in high-availability mode. |
 | `standaloneReplicas` | int | `1` | Number of etcd replicas in standalone mode. |
-| `image` | string | `"quay.io/coreos/etcd:v3.6.6"` | Etcd image to deploy. |
+| `image.repository` | string | `"quay.io/coreos/etcd"` | Etcd image repository to deploy. |
+| `image.tag` | string | `"v3.6.6"` | Etcd image tag to deploy. |
+| `image.digest` | string | `""` | Etcd image digest (overrides the tag when set). |
+| `image.pullPolicy` | string | `IfNotPresent` | Image pull policy. |
 | `grpcPort` | int | `2379` | gRPC client service port. |
 | `httpPort` | int | `2381` | HTTP client port for health checks and HTTP endpoints. |
 | `service.type` | string | `ClusterIP` | Kubernetes service type. |

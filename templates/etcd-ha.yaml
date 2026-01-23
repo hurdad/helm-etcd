@@ -78,7 +78,8 @@ spec:
     spec:
       containers:
         - name: etcd
-          image: {{ .Values.image }}
+          image: {{ include "etcd.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: POD_NAME
               valueFrom:

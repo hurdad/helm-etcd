@@ -6,8 +6,9 @@ Helm chart for deploying an etcd cluster.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `ha_enabled` | bool | `true` | Enable high-availability mode. |
-| `replicas` | int | `3` | Number of etcd replicas. |
+| `haEnabled` | bool | `true` | Enable high-availability mode. |
+| `haReplicas` | int | `3` | Number of etcd replicas in high-availability mode. |
+| `standaloneReplicas` | int | `1` | Number of etcd replicas in standalone mode. |
 | `image` | string | `"quay.io/coreos/etcd:v3.6.6"` | Etcd image to deploy. |
 | `grpcPort` | int | `2379` | gRPC client service port. |
 | `httpPort` | int | `2381` | HTTP client port for health checks and HTTP endpoints. |

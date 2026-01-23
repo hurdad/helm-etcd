@@ -61,7 +61,7 @@ Headless service name for etcd.
 Initial cluster list for etcd HA mode.
 */}}
 {{- define "etcd.initialCluster" -}}
-{{- $replicas := int .Values.replicas -}}
+{{- $replicas := int .Values.haReplicas -}}
 {{- $name := include "etcd.fullname" . -}}
 {{- $svc := include "etcd.headlessName" . -}}
 {{- $entries := list -}}

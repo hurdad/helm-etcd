@@ -85,7 +85,7 @@ spec:
 
 ---
 # -------------------------------
-# Etcd Service (k3s ServiceLB)
+# Etcd Client Service
 # -------------------------------
 apiVersion: v1
 kind: Service

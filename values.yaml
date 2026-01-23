@@ -50,3 +50,23 @@ podLabels: {}
 podAnnotations: {}
 serviceAnnotations: {}
 pvcAnnotations: {}
+tls:
+  client:
+    enabled: false
+    secretName: ""
+    mountPath: /etc/etcd/tls/client
+    certFile: tls.crt
+    keyFile: tls.key
+    caFile: ca.crt
+    clientCertAuth: false
+  peer:
+    enabled: false
+    secretName: ""
+    mountPath: /etc/etcd/tls/peer
+    certFile: tls.crt
+    keyFile: tls.key
+    caFile: ca.crt
+    clientCertAuth: false
+auth:
+  enabled: false
+  tokenType: ""

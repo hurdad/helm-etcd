@@ -42,3 +42,19 @@ Helm chart for deploying an etcd cluster.
 | `podAnnotations` | object | `{}` | Extra annotations applied to pods. |
 | `serviceAnnotations` | object | `{}` | Extra annotations applied to Services. |
 | `pvcAnnotations` | object | `{}` | Extra annotations applied to PVCs. |
+| `tls.client.enabled` | bool | `false` | Enable TLS for client (gRPC/HTTP) endpoints. |
+| `tls.client.secretName` | string | `""` | Secret name containing the client TLS certs. |
+| `tls.client.mountPath` | string | `/etc/etcd/tls/client` | Mount path for client TLS assets. |
+| `tls.client.certFile` | string | `tls.crt` | Client certificate filename inside the secret. |
+| `tls.client.keyFile` | string | `tls.key` | Client key filename inside the secret. |
+| `tls.client.caFile` | string | `ca.crt` | Client CA filename inside the secret. |
+| `tls.client.clientCertAuth` | bool | `false` | Require client certificates for authentication. |
+| `tls.peer.enabled` | bool | `false` | Enable TLS for peer endpoints (HA mode). |
+| `tls.peer.secretName` | string | `""` | Secret name containing the peer TLS certs. |
+| `tls.peer.mountPath` | string | `/etc/etcd/tls/peer` | Mount path for peer TLS assets. |
+| `tls.peer.certFile` | string | `tls.crt` | Peer certificate filename inside the secret. |
+| `tls.peer.keyFile` | string | `tls.key` | Peer key filename inside the secret. |
+| `tls.peer.caFile` | string | `ca.crt` | Peer CA filename inside the secret. |
+| `tls.peer.clientCertAuth` | bool | `false` | Require peer client certificates for authentication. |
+| `auth.enabled` | bool | `false` | Enable auth token configuration for etcd. |
+| `auth.tokenType` | string | `""` | Auth token type for etcd (`jwt` when enabled). |

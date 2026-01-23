@@ -60,6 +60,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
+      {{- $clientScheme := ternary "https" "http" .Values.tls.client.enabled }}
+      {{- $healthScheme := ternary "HTTPS" "HTTP" .Values.tls.client.enabled }}
       containers:
         - name: etcd
           image: {{ include "etcd.image" . }}
@@ -67,9 +69,20 @@ spec:
           command:
             - etcd
             - --data-dir=/var/lib/etcd
-            - --listen-client-urls=http://0.0.0.0:{{ .Values.grpcPort }}
-            - --listen-client-http-urls=http://0.0.0.0:{{ .Values.httpPort }}
-            - --advertise-client-urls=http://{{ include "etcd.fullname" . }}:{{ .Values.grpcPort }}
+            - --listen-client-urls={{ $clientScheme }}://0.0.0.0:{{ .Values.grpcPort }}
+            - --listen-client-http-urls={{ $clientScheme }}://0.0.0.0:{{ .Values.httpPort }}
+            - --advertise-client-urls={{ $clientScheme }}://{{ include "etcd.fullname" . }}:{{ .Values.grpcPort }}
+            {{- if .Values.tls.client.enabled }}
+            - --cert-file={{ .Values.tls.client.mountPath }}/{{ .Values.tls.client.certFile }}
+            - --key-file={{ .Values.tls.client.mountPath }}/{{ .Values.tls.client.keyFile }}
+            - --trusted-ca-file={{ .Values.tls.client.mountPath }}/{{ .Values.tls.client.caFile }}
+            {{- if .Values.tls.client.clientCertAuth }}
+            - --client-cert-auth
+            {{- end }}
+            {{- end }}
+            {{- if .Values.auth.enabled }}
+            - --auth-token={{ .Values.auth.tokenType | default "jwt" }}
+            {{- end }}
           ports:
             - name: client-grpc
               containerPort: {{ .Values.grpcPort }}
@@ -82,6 +95,7 @@ spec:
             httpGet:
               path: {{ .Values.healthChecks.liveness.path }}
               port: {{ .Values.httpPort }}
+              scheme: {{ $healthScheme }}
             initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
@@ -90,6 +104,7 @@ spec:
             httpGet:
               path: {{ .Values.healthChecks.readiness.path }}
               port: {{ .Values.httpPort }}
+              scheme: {{ $healthScheme }}
             initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
@@ -98,6 +113,7 @@ spec:
             httpGet:
               path: {{ .Values.healthChecks.startup.path }}
               port: {{ .Values.httpPort }}
+              scheme: {{ $healthScheme }}
             periodSeconds: {{ .Values.healthChecks.startup.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.startup.timeoutSeconds }}
             failureThreshold: {{ .Values.healthChecks.startup.failureThreshold }}
@@ -105,7 +121,17 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/etcd
+            {{- if .Values.tls.client.enabled }}
+            - name: client-tls
+              mountPath: {{ .Values.tls.client.mountPath }}
+              readOnly: true
+            {{- end }}
       volumes:
+        {{- if .Values.tls.client.enabled }}
+        - name: client-tls
+          secret:
+            secretName: {{ .Values.tls.client.secretName }}
+        {{- end }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "etcd.fullname" . }}-data

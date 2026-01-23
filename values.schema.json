@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "haEnabled": {"type": "boolean"},
+    "haReplicas": {"type": "integer", "minimum": 1},
+    "standaloneReplicas": {"type": "integer", "minimum": 1},
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "tag": {"type": "string"},
+        "digest": {"type": "string"},
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"]
+        }
+      },
+      "required": ["repository"]
+    },
+    "grpcPort": {"type": "integer", "minimum": 1, "maximum": 65535},
+    "httpPort": {"type": "integer", "minimum": 1, "maximum": 65535},
+    "peerPort": {"type": "integer", "minimum": 1, "maximum": 65535},
+    "service": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"]
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "requests": {"type": "object", "additionalProperties": {"type": "string"}},
+        "limits": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "storage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "size": {"type": "string", "minLength": 1},
+        "storageClassName": {"type": "string"}
+      },
+      "required": ["size"]
+    },
+    "healthChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "liveness": {"$ref": "#/definitions/httpProbe"},
+        "readiness": {"$ref": "#/definitions/httpProbe"},
+        "startup": {"$ref": "#/definitions/startupProbe"}
+      }
+    },
+    "pvcRetentionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "whenDeleted": {
+          "type": "string",
+          "enum": ["Retain", "Delete"]
+        },
+        "whenScaled": {
+          "type": "string",
+          "enum": ["Retain", "Delete"]
+        }
+      }
+    },
+    "commonLabels": {"type": "object", "additionalProperties": {"type": "string"}},
+    "commonAnnotations": {"type": "object", "additionalProperties": {"type": "string"}},
+    "podLabels": {"type": "object", "additionalProperties": {"type": "string"}},
+    "podAnnotations": {"type": "object", "additionalProperties": {"type": "string"}},
+    "serviceAnnotations": {"type": "object", "additionalProperties": {"type": "string"}},
+    "pvcAnnotations": {"type": "object", "additionalProperties": {"type": "string"}},
+    "affinity": {"type": "object"},
+    "topologySpreadConstraints": {"type": "array", "items": {"type": "object"}},
+    "haPodAntiAffinity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "weight": {"type": "integer", "minimum": 1, "maximum": 100},
+        "topologyKey": {"type": "string", "minLength": 1}
+      }
+    },
+    "topologySpread": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "maxSkew": {"type": "integer", "minimum": 1},
+        "whenUnsatisfiable": {
+          "type": "string",
+          "enum": ["DoNotSchedule", "ScheduleAnyway"]
+        },
+        "includeZone": {"type": "boolean"}
+      }
+    },
+    "tls": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "client": {"$ref": "#/definitions/tlsConfig"},
+        "peer": {"$ref": "#/definitions/tlsConfig"}
+      }
+    },
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "tokenType": {"type": "string"}
+      }
+    }
+  },
+  "definitions": {
+    "httpProbe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "initialDelaySeconds": {"type": "integer", "minimum": 0},
+        "periodSeconds": {"type": "integer", "minimum": 1},
+        "timeoutSeconds": {"type": "integer", "minimum": 1},
+        "failureThreshold": {"type": "integer", "minimum": 1}
+      }
+    },
+    "startupProbe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "periodSeconds": {"type": "integer", "minimum": 1},
+        "timeoutSeconds": {"type": "integer", "minimum": 1},
+        "failureThreshold": {"type": "integer", "minimum": 1}
+      }
+    },
+    "tlsConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "secretName": {"type": "string"},
+        "mountPath": {"type": "string", "minLength": 1},
+        "certFile": {"type": "string", "minLength": 1},
+        "keyFile": {"type": "string", "minLength": 1},
+        "caFile": {"type": "string", "minLength": 1},
+        "clientCertAuth": {"type": "boolean"}
+      }
+    }
+  }
+}

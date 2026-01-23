@@ -1,4 +1,4 @@
-{{- if .Values.ha_enabled }}
+{{- if .Values.haEnabled }}
 # -------------------------------
 # Etcd Headless Service (HA peer discovery)
 # -------------------------------
@@ -33,7 +33,7 @@ metadata:
   name: {{ include "etcd.fullname" . }}
   namespace: {{ include "etcd.namespace" . }}
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.haReplicas }}
   serviceName: {{ include "etcd.headlessName" . }}
   podManagementPolicy: Parallel
   selector:

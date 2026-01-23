@@ -1,4 +1,4 @@
-{{- if not .Values.ha_enabled }}
+{{- if not .Values.haEnabled }}
 # -------------------------------
 # Persistent Volume Claim
 # -------------------------------
@@ -27,7 +27,7 @@ metadata:
   name: {{ include "etcd.fullname" . }}
   namespace: {{ include "etcd.namespace" . }}
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.standaloneReplicas | default 1 }}
   selector:
     matchLabels:
       app: {{ include "etcd.fullname" . }}

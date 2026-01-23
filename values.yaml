@@ -1,5 +1,6 @@
-ha_enabled: true
-replicas: 3
+haEnabled: true
+haReplicas: 3
+standaloneReplicas: 1
 image: "quay.io/coreos/etcd:v3.6.6"
 grpcPort: 2379
 httpPort: 2381

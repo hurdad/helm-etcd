@@ -74,6 +74,8 @@ spec:
               containerPort: {{ .Values.grpcPort }}
             - name: client-http
               containerPort: {{ .Values.httpPort }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.healthChecks.enabled }}
           livenessProbe:
             httpGet:

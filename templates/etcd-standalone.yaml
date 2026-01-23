@@ -54,7 +54,7 @@ spec:
           livenessProbe:
             httpGet:
               path: {{ .Values.healthChecks.liveness.path }}
-              port: client-http
+              port: client-grpc
             initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
@@ -62,7 +62,7 @@ spec:
           readinessProbe:
             httpGet:
               path: {{ .Values.healthChecks.readiness.path }}
-              port: client-http
+              port: client-grpc
             initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
@@ -70,7 +70,7 @@ spec:
           startupProbe:
             httpGet:
               path: {{ .Values.healthChecks.startup.path }}
-              port: client-http
+              port: client-grpc
             periodSeconds: {{ .Values.healthChecks.startup.periodSeconds }}
             timeoutSeconds: {{ .Values.healthChecks.startup.timeoutSeconds }}
             failureThreshold: {{ .Values.healthChecks.startup.failureThreshold }}

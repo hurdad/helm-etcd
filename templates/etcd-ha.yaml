@@ -12,6 +12,7 @@ metadata:
     etcd.service: headless
 spec:
   clusterIP: None
+  publishNotReadyAddresses: true
   selector:
     app: {{ include "etcd.fullname" . }}
   ports:

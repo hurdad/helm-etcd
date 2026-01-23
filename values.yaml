@@ -28,3 +28,7 @@ healthChecks:
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 30
+pvcRetentionPolicy:
+  enabled: false
+  whenDeleted: Retain
+  whenScaled: Retain

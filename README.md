@@ -29,3 +29,6 @@ Helm chart for deploying an etcd cluster.
 | `healthChecks.startup.periodSeconds` | int | `5` | Startup probe period. |
 | `healthChecks.startup.timeoutSeconds` | int | `3` | Startup probe timeout. |
 | `healthChecks.startup.failureThreshold` | int | `30` | Startup probe failure threshold. |
+| `pvcRetentionPolicy.enabled` | bool | `false` | Enable StatefulSet PVC retention policy (Kubernetes 1.21+). |
+| `pvcRetentionPolicy.whenDeleted` | string | `Retain` | PVC retention when the StatefulSet is deleted (`Retain` or `Delete`). |
+| `pvcRetentionPolicy.whenScaled` | string | `Retain` | PVC retention when the StatefulSet is scaled down (`Retain` or `Delete`). |

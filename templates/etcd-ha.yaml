@@ -36,6 +36,15 @@ spec:
   replicas: {{ .Values.replicas }}
   serviceName: {{ include "etcd.headlessName" . }}
   podManagementPolicy: Parallel
+  {{- if .Values.pvcRetentionPolicy.enabled }}
+  persistentVolumeClaimRetentionPolicy:
+    {{- if .Values.pvcRetentionPolicy.whenDeleted }}
+    whenDeleted: {{ .Values.pvcRetentionPolicy.whenDeleted }}
+    {{- end }}
+    {{- if .Values.pvcRetentionPolicy.whenScaled }}
+    whenScaled: {{ .Values.pvcRetentionPolicy.whenScaled }}
+    {{- end }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ include "etcd.fullname" . }}

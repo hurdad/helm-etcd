@@ -30,6 +30,7 @@ uses `haReplicas`; otherwise it uses `standaloneReplicas`.
 | `image.pullPolicy` | string | `IfNotPresent` | Image pull policy. |
 | `grpcPort` | int | `2379` | gRPC client service port. |
 | `httpPort` | int | `2381` | HTTP client port for health checks and HTTP endpoints. |
+| `peerPort` | int | `2380` | Peer port for intra-cluster communication. |
 | `service.type` | string | `ClusterIP` | Kubernetes service type. |
 | `storage.size` | string | `10Gi` | Persistent volume size. |
 | `storage.storageClassName` | string | `""` | Storage class name (empty uses default). |

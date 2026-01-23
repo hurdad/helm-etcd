@@ -42,6 +42,15 @@ Helm chart for deploying an etcd cluster.
 | `podAnnotations` | object | `{}` | Extra annotations applied to pods. |
 | `serviceAnnotations` | object | `{}` | Extra annotations applied to Services. |
 | `pvcAnnotations` | object | `{}` | Extra annotations applied to PVCs. |
+| `affinity` | object | `{}` | Custom pod affinity/anti-affinity rules (overrides built-in HA pod anti-affinity). |
+| `topologySpreadConstraints` | list | `[]` | Custom topology spread constraints (overrides built-in HA spread constraints). |
+| `haPodAntiAffinity.enabled` | bool | `true` | Enable preferred HA pod anti-affinity to avoid co-scheduling on the same node. |
+| `haPodAntiAffinity.weight` | int | `100` | Weight for the preferred HA pod anti-affinity rule. |
+| `haPodAntiAffinity.topologyKey` | string | `kubernetes.io/hostname` | Topology key for the HA pod anti-affinity rule. |
+| `topologySpread.enabled` | bool | `true` | Enable default topology spread constraints for HA pods. |
+| `topologySpread.maxSkew` | int | `1` | Maximum skew for default topology spread constraints. |
+| `topologySpread.whenUnsatisfiable` | string | `ScheduleAnyway` | Behavior when topology spread constraints cannot be satisfied. |
+| `topologySpread.includeZone` | bool | `true` | Also spread HA pods across zones when the label is available. |
 | `tls.client.enabled` | bool | `false` | Enable TLS for client (gRPC/HTTP) endpoints. |
 | `tls.client.secretName` | string | `""` | Secret name containing the client TLS certs. |
 | `tls.client.mountPath` | string | `/etc/etcd/tls/client` | Mount path for client TLS assets. |

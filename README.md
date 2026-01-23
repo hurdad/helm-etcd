@@ -2,7 +2,22 @@
 
 Helm chart for deploying an etcd cluster.
 
-## Values
+## Quickstart
+
+```sh
+helm install my-etcd .
+```
+
+Override values with `--set` or a values file:
+
+```sh
+helm install my-etcd . -f my-values.yaml
+```
+
+## Configuration
+
+The chart supports standalone and HA modes. When `haEnabled` is `true` the chart
+uses `haReplicas`; otherwise it uses `standaloneReplicas`.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |

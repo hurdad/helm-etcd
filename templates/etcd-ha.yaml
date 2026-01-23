@@ -8,13 +8,20 @@ metadata:
   name: {{ include "etcd.headlessName" . }}
   namespace: {{ include "etcd.namespace" . }}
   labels:
-    app: {{ include "etcd.fullname" . }}
+    {{- include "etcd.labels" . | nindent 4 }}
     etcd.service: headless
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   clusterIP: None
   publishNotReadyAddresses: true
   selector:
-    app: {{ include "etcd.fullname" . }}
+    {{- include "etcd.selectorLabels" . | nindent 4 }}
   ports:
     - name: peer
       port: {{ .Values.peerPort }}
@@ -32,6 +39,15 @@ kind: StatefulSet
 metadata:
   name: {{ include "etcd.fullname" . }}
   namespace: {{ include "etcd.namespace" . }}
+  labels:
+    {{- include "etcd.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicas }}
   serviceName: {{ include "etcd.headlessName" . }}
@@ -47,11 +63,18 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ include "etcd.fullname" . }}
+      {{- include "etcd.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "etcd.fullname" . }}
+        {{- include "etcd.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       containers:
         - name: etcd
@@ -111,6 +134,14 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: data
+        {{- with .Values.commonLabels }}
+        labels:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.pvcAnnotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       spec:
         accessModes:
           - ReadWriteOnce
@@ -131,12 +162,19 @@ metadata:
   name: {{ include "etcd.fullname" . }}
   namespace: {{ include "etcd.namespace" . }}
   labels:
-    app: {{ include "etcd.fullname" . }}
+    {{- include "etcd.labels" . | nindent 4 }}
     etcd.service: client
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type | default "ClusterIP" }}
   selector:
-    app: {{ include "etcd.fullname" . }}
+    {{- include "etcd.selectorLabels" . | nindent 4 }}
   ports:
     - name: client-grpc
       port: {{ .Values.grpcPort }}

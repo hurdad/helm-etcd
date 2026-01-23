@@ -6,6 +6,13 @@ Expand the name of the chart.
 {{- end -}}
 
 {{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "etcd.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified app name.
 */}}
 {{- define "etcd.fullname" -}}
@@ -14,6 +21,26 @@ Create a default fully qualified app name.
 {{- else -}}
 {{- printf "%s-%s" .Release.Name (include "etcd.name" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Common labels for all resources.
+*/}}
+{{- define "etcd.labels" -}}
+app: {{ include "etcd.fullname" . }}
+app.kubernetes.io/name: {{ include "etcd.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+helm.sh/chart: {{ include "etcd.chart" . }}
+{{- end -}}
+
+{{/*
+Labels used for selectors.
+*/}}
+{{- define "etcd.selectorLabels" -}}
+app: {{ include "etcd.fullname" . }}
+app.kubernetes.io/name: {{ include "etcd.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*

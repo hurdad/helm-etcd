@@ -79,6 +79,40 @@ spec:
       {{- $clientScheme := ternary "https" "http" .Values.tls.client.enabled }}
       {{- $peerScheme := ternary "https" "http" .Values.tls.peer.enabled }}
       {{- $healthScheme := ternary "HTTPS" "HTTP" .Values.tls.client.enabled }}
+      {{- if .Values.affinity }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.haPodAntiAffinity.enabled }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: {{ .Values.haPodAntiAffinity.weight }}
+              podAffinityTerm:
+                topologyKey: {{ .Values.haPodAntiAffinity.topologyKey }}
+                labelSelector:
+                  matchLabels:
+                    {{- include "etcd.selectorLabels" . | nindent 20 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml .Values.topologySpreadConstraints | nindent 8 }}
+      {{- else if .Values.topologySpread.enabled }}
+      topologySpreadConstraints:
+        - maxSkew: {{ .Values.topologySpread.maxSkew }}
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: {{ .Values.topologySpread.whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "etcd.selectorLabels" . | nindent 14 }}
+        {{- if .Values.topologySpread.includeZone }}
+        - maxSkew: {{ .Values.topologySpread.maxSkew }}
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: {{ .Values.topologySpread.whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "etcd.selectorLabels" . | nindent 14 }}
+        {{- end }}
+      {{- end }}
       {{- if or .Values.tls.client.enabled .Values.tls.peer.enabled }}
       volumes:
         {{- if .Values.tls.client.enabled }}

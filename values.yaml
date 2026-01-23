@@ -50,6 +50,17 @@ podLabels: {}
 podAnnotations: {}
 serviceAnnotations: {}
 pvcAnnotations: {}
+affinity: {}
+topologySpreadConstraints: []
+haPodAntiAffinity:
+  enabled: true
+  weight: 100
+  topologyKey: kubernetes.io/hostname
+topologySpread:
+  enabled: true
+  maxSkew: 1
+  whenUnsatisfiable: ScheduleAnyway
+  includeZone: true
 tls:
   client:
     enabled: false

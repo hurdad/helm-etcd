@@ -64,9 +64,10 @@ Initial cluster list for etcd HA mode.
 {{- $replicas := int .Values.haReplicas -}}
 {{- $name := include "etcd.fullname" . -}}
 {{- $svc := include "etcd.headlessName" . -}}
+{{- $scheme := ternary "https" "http" .Values.tls.peer.enabled -}}
 {{- $entries := list -}}
 {{- range $index := until $replicas -}}
-{{- $peer := printf "%s-%d=http://%s-%d.%s:%d" $name $index $name $index $svc (int $.Values.peerPort) -}}
+{{- $peer := printf "%s-%d=%s://%s-%d.%s:%d" $name $index $scheme $name $index $svc (int $.Values.peerPort) -}}
 {{- $entries = append $entries $peer -}}
 {{- end -}}
 {{- join "," $entries -}}
